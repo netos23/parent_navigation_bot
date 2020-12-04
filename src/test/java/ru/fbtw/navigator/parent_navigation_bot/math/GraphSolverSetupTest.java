@@ -8,14 +8,14 @@ import ru.fbtw.navigator.parent_navigation_bot.navigation.Node;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.BitSet;
 import java.util.HashMap;
 
-import static org.junit.jupiter.api.Assertions.*;
+class GraphSolverSetupTest {
+	private HashMap<String, Node> test0;
+	private HashMap<String, Node> test1;
 
-class GraphSolverTest {
-
-	private GraphSolver solver0;
-	private GraphSolver solver1;
 
 	@BeforeEach
 	void setUp() {
@@ -23,14 +23,12 @@ class GraphSolverTest {
 			String pathname0 = "test_dir/serialize_test.json";
 			File testFile0 = new File(pathname0);
 			GraphJsonParser parser0 = new GraphJsonParser(testFile0);
-			HashMap<String,Node> test0 = parser0.parse();
-			solver0 = new GraphSolver(test0);
+			test0 = parser0.parse();
 
 			String pathname1 = "test_dir/serialize_test1.json";
 			File testFile1 = new File(pathname1);
 			GraphJsonParser parser1 = new GraphJsonParser(testFile1);
-			HashMap<String,Node> test1 = parser1.parse();
-			solver1 = new GraphSolver(test1);
+			test1 = parser1.parse();
 		} catch (IOException e) {
 			e.printStackTrace();
 			Assertions.fail(e.getMessage());
@@ -38,12 +36,23 @@ class GraphSolverTest {
 	}
 
 	@Test
-	void getPath0() {
-		Assertions.assertEquals(2,solver0.getPath("Node 0","Node 1").size());
+	void testSecurity0() {
+		Assertions.assertEquals(3, test0.size());
+		GraphSolver solver = new GraphSolver(test0);
+		Assertions.assertTrue(solver.testSecurity());
 	}
 
 	@Test
-	void getPath1() {
-		Assertions.assertEquals(7,solver1.getPath("Node 11","Node 0").size());
+	void testSecurity1() {
+		Assertions.assertEquals(8, test1.size());
+		GraphSolver solver = new GraphSolver(test1);
+		Assertions.assertTrue(solver.testSecurity());
 	}
+
+
+	@Test
+	void testPath(){
+
+	}
+
 }

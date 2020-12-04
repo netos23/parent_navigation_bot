@@ -6,12 +6,41 @@ import ru.fbtw.navigator.parent_navigation_bot.navigation.NodeType;
 import java.util.*;
 
 public class GraphSolver {
+
+	/**
+	 * Shows that every node can be reached from any node
+	 */
 	private boolean isSecure;
+
+	/**
+	 * Key-value storage of nodes for fast searching by name
+	 */
 	private HashMap<String, Node> nodesStorage;
 
-	public GraphSolver(boolean isSecure, HashMap<String, Node> nodesStorage) {
+	/**
+	 * List of GraphNode{@link GraphNode} for searching in the graph of the nodes
+	 */
+	private ArrayList<GraphNode> graphNodes;
+
+	/**
+	 * Unique nodes, includes node of type{@code NodeType.TEMP}
+	 */
+	private HashSet<Node> uniqueNodes;
+
+	/**
+	 * Key-value storage of GraphNodes for fast searching by Node
+	 */
+	private HashMap<Node, GraphNode> graphNodeStorage;
+
+	private GraphNodeComparator comarator;
+
+
+	public GraphSolver(HashMap<String, Node> nodesStorage) {
 		this.nodesStorage = nodesStorage;
+		uniqueNodes = new HashSet<>();
+		comarator = new GraphNodeComparator();
 		testSecurity();
+		initGraph();
 	}
 
 	private static <T> T getFirstFormSet(Set<T> collection) {
@@ -26,7 +55,8 @@ public class GraphSolver {
 
 		while (!queue.isEmpty()) {
 			Node el = queue.pollFirst();
-			if (el != null &&( el.getType() == NodeType.TEMP || destinations.remove(el))) {
+			uniqueNodes.add(el);
+			if (el != null && (el.getType() == NodeType.TEMP || destinations.remove(el))) {
 				queue.addAll(el.getNeighbours());
 			}
 		}
@@ -34,20 +64,102 @@ public class GraphSolver {
 		return (isSecure = destinations.isEmpty());
 	}
 
-	public LinkedHashSet<Node> getPath(String targetName, String startName){
+
+	private void initGraph() {
+		// setup nodes
+		graphNodes = new ArrayList<>();
+		graphNodeStorage = new HashMap<>();
+		for (Node node : uniqueNodes) {
+			GraphNode graphNode = new GraphNode(node);
+			graphNodes.add(graphNode);
+			graphNodeStorage.put(node, graphNode);
+		}
+
+		// setup connections
+		for (Node node : uniqueNodes) {
+			for (Node neighbour : node.getNeighbours()) {
+				GraphNode nodeA = graphNodeStorage.get(node);
+				GraphNode nodeB = graphNodeStorage.get(neighbour);
+
+				Edge edge = new Edge(nodeA, nodeB);
+				if(!nodeA.getConnections().contains(edge)) {
+					nodeA.getConnections().add(edge);
+					nodeB.getConnections().add(edge);
+				}
+			}
+		}
+
+		// sort connections by length
+		for (GraphNode node : graphNodes) {
+			node.applyConnections();
+		}
+
+		restoreNodes();
+	}
+
+	public List<GraphNode> getPath(String targetName, String startName) {
 		Node target = nodesStorage.get(targetName);
 		Node start = nodesStorage.get(startName);
 
-		if(target != null && start != null){
-			return searchPath(target,start);
-		}else{
+		if (target != null && start != null) {
+			return searchPath(target, start);
+		} else {
 			return null;
 		}
 	}
 
-	private LinkedHashSet<Node> searchPath(Node target, Node start) {
-		return null;
+	private List<GraphNode> searchPath(Node target, Node origin) {
+		restoreNodes();
+
+		GraphNode start = graphNodeStorage.get(origin);
+		GraphNode finish = graphNodeStorage.get(target);
+
+		start.setDestination(0);
+		graphNodes.sort(comarator);
+
+		while (!graphNodes.get(0).isFinal()) {
+			GraphNode selected = graphNodes.get(0);
+			for (Edge edge : selected.getConnections()) {
+				if (!edge.isChecked()) {
+					GraphNode other = edge.getOther(selected);
+					edge.setChecked(true);
+					if (other.getDestination() > selected.getDestination() + edge.getLength()) {
+						other.setDestination(selected.getDestination() + edge.getLength());
+						other.setPrev(selected);
+					}
+				}
+			}
+			selected.setFinal(true);
+
+			graphNodes.sort(comarator);
+		}
+
+		LinkedList<GraphNode> path = new LinkedList<>();
+		path.add(finish);
+		GraphNode prev;
+
+		do{
+			prev = path.peekLast().getPrev();
+			if(prev != null){
+				path.add(prev);
+			}
+		}while (prev != null);
+
+		return path;
 	}
+
+	private void restoreNodes() {
+		for (GraphNode node : graphNodes) {
+			for (Edge edge : node.getConnections()) {
+				edge.setChecked(false);
+			}
+			node.setFinal(false);
+			node.setLevel(null);
+			node.setPrev(null);
+			node.setDestination(Double.POSITIVE_INFINITY);
+		}
+	}
+
 
 	public boolean isSecure() {
 		return isSecure;
