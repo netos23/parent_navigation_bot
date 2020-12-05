@@ -2,6 +2,7 @@ package ru.fbtw.navigator.parent_navigation_bot.appconfig;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -11,8 +12,17 @@ import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.meta.ApiContext;
 import ru.fbtw.navigator.parent_navigation_bot.bot_api.MapperTelegramBot;
 import ru.fbtw.navigator.parent_navigation_bot.bot_api.TelegramFacade;
+import ru.fbtw.navigator.parent_navigation_bot.io.GraphJsonParser;
+import ru.fbtw.navigator.parent_navigation_bot.navigation.Node;
+import ru.fbtw.navigator.parent_navigation_bot.search.SearchingService;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.HashMap;
 
 
+@Slf4j
 @Getter
 @Setter
 @Configuration
@@ -44,5 +54,23 @@ public class MapperBotConfig {
         messageSource.setBasename("classpath:messages");
         messageSource.setDefaultEncoding("UTF-8");
         return messageSource;
+    }
+
+    // TODO: 05.12.2020 в случае если бин не поучен то сказать что бот временно недоступен
+    @Bean
+    public SearchingService searchingService(){
+        HashMap<String, Node> nodesStorage = new HashMap<>();
+        try {
+            File defaultEnv = new File("default_env.json");
+            GraphJsonParser parser = new GraphJsonParser(defaultEnv);
+            nodesStorage = parser.parse();
+
+        } catch (FileNotFoundException e) {
+            log.error("Failed to load the default configuration");
+        } catch (IOException e) {
+            log.error("The default configuration file is corrupted");
+        }
+
+        return new SearchingService(nodesStorage);
     }
 }

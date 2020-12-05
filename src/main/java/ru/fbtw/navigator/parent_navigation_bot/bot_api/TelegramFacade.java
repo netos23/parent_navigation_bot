@@ -12,9 +12,11 @@ import ru.fbtw.navigator.parent_navigation_bot.cache.UserDataCache;
 public class TelegramFacade {
     private final String START = "/start";
     private final String HELP = "/help";
+    private final String LIST = "/list";
 
     private BotStateContext botStateContext;
     private UserDataCache userDataCache;
+
 
 
     public TelegramFacade(
@@ -54,8 +56,11 @@ public class TelegramFacade {
                 case HELP:
                     botState = BotState.PRINT_HELP;
                     break;
+                case LIST:
+                    botState = BotState.LIST;
+                    break;
                 default:
-                    botState = BotState.SEARCH;
+                    botState = BotState.SMART_SEARCH;
             }
         }
 

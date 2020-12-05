@@ -1,8 +1,10 @@
 package ru.fbtw.navigator.parent_navigation_bot.service;
 
+import lombok.Getter;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
+@Getter
 @Service
 public class ReplyMessagesService {
     private LocaleMessageService localeMessageService;

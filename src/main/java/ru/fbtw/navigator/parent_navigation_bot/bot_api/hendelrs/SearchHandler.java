@@ -31,6 +31,6 @@ public class SearchHandler implements InputMessageHandler{
 
     @Override
     public BotState getHandlerName() {
-        return BotState.SEARCH;
+        return BotState.SMART_SEARCH;
     }
 }

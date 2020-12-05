@@ -4,7 +4,12 @@ public enum BotState {
     WELCOME,
     PRINT_HELP,
     IDLE,
+    SMART_SEARCH,
+    VOICE_SEARCH,
     SEARCH,
+    SEARCH_GET_FROM,
+    SEARCH_GET_TO,
+    LIST,
     PROCESSING;
 
     public static BotState getOrDefault(int messageType) {
