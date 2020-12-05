@@ -97,7 +97,7 @@ public class GraphSolver {
 		restoreNodes();
 	}
 
-	public List<GraphNode> getPath(String targetName, String startName) {
+	public List<GraphNode> getPath(String targetName, String startName) throws Exception {
 		Node target = nodesStorage.get(targetName);
 		Node start = nodesStorage.get(startName);
 
@@ -108,7 +108,7 @@ public class GraphSolver {
 		}
 	}
 
-	private List<GraphNode> searchPath(Node target, Node origin) {
+	private List<GraphNode> searchPath(Node target, Node origin) throws Exception{
 		restoreNodes();
 
 		GraphNode start = graphNodeStorage.get(origin);
@@ -142,6 +142,10 @@ public class GraphSolver {
 			prev = path.peekLast().getPrev();
 			if(prev != null){
 				path.add(prev);
+			}else{
+				if(!path.peekLast().equals(start)){
+					throw new Exception("Wrong path");
+				}
 			}
 		}while (prev != null);
 
@@ -154,7 +158,6 @@ public class GraphSolver {
 				edge.setChecked(false);
 			}
 			node.setFinal(false);
-			node.setLevel(null);
 			node.setPrev(null);
 			node.setDestination(Double.POSITIVE_INFINITY);
 		}

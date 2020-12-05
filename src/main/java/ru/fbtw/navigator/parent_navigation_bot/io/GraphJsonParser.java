@@ -10,6 +10,7 @@ import ru.fbtw.navigator.parent_navigation_bot.navigation.MultiLevelNode;
 import ru.fbtw.navigator.parent_navigation_bot.navigation.Node;
 import ru.fbtw.navigator.parent_navigation_bot.navigation.NodeType;
 
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -104,9 +105,9 @@ public class GraphJsonParser {
 		String name = levelJsonObj.get("name").getAsString();
 
 		String base64Image = levelJsonObj.get("image").getAsString();
-		Image image = ImageUtils.imageFromBase64(base64Image);
+		//BufferedImage image = ImageUtils.imageFromBase64(base64Image);
 
-		Level level = new Level(name, image);
+		Level level = new Level(name, base64Image);
 
 		JsonObject nodeSystemJson = levelJsonObj.getAsJsonObject("node_system");
 		ArrayList<Node> nodeSystem = parseNodeSystem(nodeSystemJson, level);

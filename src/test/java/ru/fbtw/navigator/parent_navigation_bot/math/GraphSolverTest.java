@@ -38,12 +38,12 @@ class GraphSolverTest {
 	}
 
 	@Test
-	void getPath0() {
+	void getPath0() throws Exception {
 		Assertions.assertEquals(2,solver0.getPath("Node 0","Node 1").size());
 	}
 
 	@Test
-	void getPath1() {
+	void getPath1() throws Exception {
 		Assertions.assertEquals(7,solver1.getPath("Node 11","Node 0").size());
 	}
 }

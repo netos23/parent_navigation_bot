@@ -2,26 +2,27 @@ package ru.fbtw.navigator.parent_navigation_bot.navigation;
 
 import javafx.scene.image.Image;
 
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 public class Level {
-	private Image image;
+	private String image;
 	private String name;
 
 	private ArrayList<Node> nodeSystem;
 
-	public Level(String name, Image image, ArrayList<Node> nodeSystem) {
+	public Level(String name, String image, ArrayList<Node> nodeSystem) {
 		this.name = name;
 		this.image = image;
 		this.nodeSystem = nodeSystem;
 	}
 
-	public Level(String name, Image image) {
+	public Level(String name, String image) {
 		this.name = name;
 		this.image = image;
 	}
 
-	public Image getImage() {
+	public String getImage() {
 		return image;
 	}
 

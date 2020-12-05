@@ -7,6 +7,7 @@ import ru.fbtw.navigator.parent_navigation_bot.navigation.Node;
 public class Edge implements Comparable<Edge>{
 	private GraphNode a;
 	private GraphNode b;
+	private Level level;
 	private double length;
 	private boolean isChecked;
 
@@ -36,8 +37,7 @@ public class Edge implements Comparable<Edge>{
 						double newLength = aPos.subtract(bPos).sqrMaginitude();
 						if(length > newLength){
 							length = newLength;
-							a.setLevel(levelA);
-							b.setLevel(levelA);
+							level = levelA;
 						}
 					}
 				}
@@ -52,6 +52,12 @@ public class Edge implements Comparable<Edge>{
 			Vector2 bPos = new Vector2(bX, bY);
 
 			length = aPos.subtract(bPos).sqrMaginitude();
+
+			if(baseNodeA instanceof MultiLevelNode){
+				level = baseNodeB.getParent();
+			}else {
+				level = baseNodeA.getParent();
+			}
 		}
 	}
 
@@ -69,6 +75,10 @@ public class Edge implements Comparable<Edge>{
 
 	public void setChecked(boolean checked) {
 		isChecked = checked;
+	}
+
+	public Level getLevel() {
+		return level;
 	}
 
 	@Override

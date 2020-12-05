@@ -12,6 +12,7 @@ public class GraphNode {
 	private double destination;
 	private GraphNode prev;
 	private boolean isFinal;
+	@Deprecated
 	private Level level;
 
 	public GraphNode(Node baseNode) {
@@ -31,10 +32,12 @@ public class GraphNode {
 		isFinal = aFinal;
 	}
 
+	@Deprecated
 	public Level getLevel() {
 		return level;
 	}
 
+	@Deprecated
 	public void setLevel(Level level) {
 		this.level = level;
 	}
@@ -61,5 +64,15 @@ public class GraphNode {
 
 	public void setPrev(GraphNode prev) {
 		this.prev = prev;
+	}
+
+
+	public Edge getConnection(GraphNode other){
+		for (Edge connection : connections) {
+			if (connection.getOther(this).equals(other)){
+				return connection;
+			}
+		}
+		return null;
 	}
 }
