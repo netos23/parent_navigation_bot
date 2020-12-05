@@ -18,7 +18,7 @@ public class GraphSolver {
 	private HashMap<String, Node> nodesStorage;
 
 	/**
-	 * List of GraphNode{@link GraphNode} for searching in the graph of the nodes
+	 * List of {@link GraphNode} for searching in the graph of the nodes
 	 */
 	private ArrayList<GraphNode> graphNodes;
 

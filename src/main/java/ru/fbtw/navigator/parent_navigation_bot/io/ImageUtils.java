@@ -18,7 +18,7 @@ import java.util.UUID;
 
 public class ImageUtils {
 	public static final String DEFAULT_TYPE = "png";
-	public static final String DEFAULT_FOLDER = "C:\\Users\\nikmo\\IdeaProjects\\navigator\\parent_navigation_bot\\test_dir\\tmp\\";
+	public static final String DEFAULT_FOLDER = "C:\\Users\\nikmo\\IdeaProjects\\navigator\\parent_navigation_bot\\test_output\\";
 
 	public static BufferedImage imageFromBase64(String base64Image) throws IOException {
 		byte[] buffer = Base64.decodeBase64(base64Image);
