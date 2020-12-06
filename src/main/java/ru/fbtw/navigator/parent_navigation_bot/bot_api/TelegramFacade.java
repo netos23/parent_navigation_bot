@@ -10,14 +10,18 @@ import ru.fbtw.navigator.parent_navigation_bot.bot_api.concurent.AsyncMessageSen
 import ru.fbtw.navigator.parent_navigation_bot.bot_api.concurent.ConcurrentItem;
 import ru.fbtw.navigator.parent_navigation_bot.cache.UserDataCache;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Component
 @Slf4j
 public class TelegramFacade {
-    private final String START = "/start";
-    private final String HELP = "/help";
-    private final String LIST = "/list";
+    private static final String SEARCH = "/search";
+    private static final String START = "/start";
+    private static final String HELP = "/help";
+    private static final String LIST = "/list";
+    private final Map<String, BotState> slashCommands;
 
     private BotStateContext botStateContext;
     private UserDataCache userDataCache;
@@ -32,6 +36,12 @@ public class TelegramFacade {
         this.botStateContext = botStateContext;
         queue = botStateContext.getContentQueue();
         this.userDataCache = userDataCache;
+
+        slashCommands = new HashMap<>();
+        slashCommands.put(START, BotState.WELCOME);
+        slashCommands.put(HELP, BotState.PRINT_HELP);
+        slashCommands.put(LIST, BotState.LIST);
+        slashCommands.put(SEARCH, BotState.SEARCH);
     }
 
     public BotApiMethod<?> handleUpdate(Update update) {
@@ -56,18 +66,10 @@ public class TelegramFacade {
         botState = userDataCache.getUserCurrentBotState(userId);
 
         if (botState == BotState.IDLE) {
-            switch (inputText) {
-                case START:
-                    botState = BotState.WELCOME;
-                    break;
-                case HELP:
-                    botState = BotState.PRINT_HELP;
-                    break;
-                case LIST:
-                    botState = BotState.LIST;
-                    break;
-                default:
-                    botState = BotState.SEARCH;
+            if (!inputText.startsWith("/")
+                    || (botState = slashCommands.get(inputText)) == null) {
+                // mast be smart search, but not implemented
+                botState = BotState.PRINT_HELP;
             }
         }
 
@@ -80,7 +82,7 @@ public class TelegramFacade {
     public void setTelegramBot(MapperTelegramBot mapperTelegramBot) {
         this.mapperTelegramBot = mapperTelegramBot;
         AsyncMessageSender asyncMessageSender
-                = new AsyncMessageSender(mapperTelegramBot,queue);
+                = new AsyncMessageSender(mapperTelegramBot, queue);
         asyncMessageSender.start();
     }
 }
