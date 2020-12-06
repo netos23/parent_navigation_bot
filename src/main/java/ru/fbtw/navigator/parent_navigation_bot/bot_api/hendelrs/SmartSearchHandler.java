@@ -1,7 +1,5 @@
 package ru.fbtw.navigator.parent_navigation_bot.bot_api.hendelrs;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -12,14 +10,14 @@ import ru.fbtw.navigator.parent_navigation_bot.service.ReplyMessagesService;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-@Slf4j
-@Component
-public class HelpHandler implements InputMessageHandler {
+
+public class SmartSearchHandler implements InputMessageHandler {
     private UserDataCache userDataCache;
     private ReplyMessagesService messagesService;
+    private ConcurrentLinkedQueue<ConcurrentItem> queue;
 
-    public HelpHandler(UserDataCache userDataCache,
-                       ReplyMessagesService messagesService) {
+    public SmartSearchHandler(UserDataCache userDataCache,
+                              ReplyMessagesService messagesService) {
         this.userDataCache = userDataCache;
         this.messagesService = messagesService;
     }
@@ -37,7 +35,7 @@ public class HelpHandler implements InputMessageHandler {
 
     @Override
     public BotState[] getHandlerName() {
-        return new BotState[]{BotState.PRINT_HELP};
+        return new BotState[]{BotState.SMART_SEARCH};
     }
 
     @Override

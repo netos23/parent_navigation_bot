@@ -16,6 +16,7 @@ public class MapperTelegramBot extends TelegramWebhookBot {
     public MapperTelegramBot(DefaultBotOptions options, TelegramFacade telegramFacade) {
         super(options);
         this.telegramFacade = telegramFacade;
+        this.telegramFacade.setTelegramBot(this);
     }
 
     @Override
@@ -31,10 +32,12 @@ public class MapperTelegramBot extends TelegramWebhookBot {
     @Override
     public BotApiMethod<?> onWebhookUpdateReceived(Update update) {
 
-        SendMessage sendMessage = telegramFacade.handleUpdate(update);
+        BotApiMethod<?> sendMessage = telegramFacade.handleUpdate(update);
 
         return sendMessage;
     }
+
+
 
     @Override
     public String getBotPath() {

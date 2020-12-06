@@ -56,7 +56,6 @@ public class MapperBotConfig {
         return messageSource;
     }
 
-    // TODO: 05.12.2020 в случае если бин не поучен то сказать что бот временно недоступен
     @Bean
     public SearchingService searchingService(){
         HashMap<String, Node> nodesStorage = new HashMap<>();

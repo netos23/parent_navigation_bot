@@ -1,16 +1,20 @@
 package ru.fbtw.navigator.parent_navigation_bot.bot_api.hendelrs;
 
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.fbtw.navigator.parent_navigation_bot.bot_api.BotState;
+import ru.fbtw.navigator.parent_navigation_bot.bot_api.concurent.ConcurrentItem;
 import ru.fbtw.navigator.parent_navigation_bot.cache.UserDataCache;
 import ru.fbtw.navigator.parent_navigation_bot.search.SearchingService;
 import ru.fbtw.navigator.parent_navigation_bot.service.LocaleMessageService;
 import ru.fbtw.navigator.parent_navigation_bot.service.ReplyMessagesService;
 
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 @Component
-public class listHandler implements InputMessageHandler{
+public class listHandler implements InputMessageHandler {
     private SearchingService searchingService;
     private UserDataCache userDataCache;
     private ReplyMessagesService messagesService;
@@ -26,7 +30,7 @@ public class listHandler implements InputMessageHandler{
     }
 
     @Override
-    public SendMessage handle(Message message) {
+    public BotApiMethod<?> handle(Message message) {
         return processUserInput(message);
     }
 
@@ -34,18 +38,23 @@ public class listHandler implements InputMessageHandler{
         int userId = message.getFrom().getId();
         long chatId = message.getChatId();
 
-        SendMessage replyToUser = messagesService.getReplyUnLocaledMessage(chatId,buildMessage());
-        userDataCache.setUserCurrentBotState(userId,BotState.IDLE);
+        SendMessage replyToUser = messagesService.getReplyUnLocaledMessage(chatId, buildMessage());
+        userDataCache.setUserCurrentBotState(userId, BotState.IDLE);
         return replyToUser;
     }
 
 
     @Override
-    public BotState getHandlerName() {
-        return BotState.LIST;
+    public BotState[] getHandlerName() {
+        return new BotState[]{BotState.LIST};
     }
 
-    private String buildMessage(){
+    @Override
+    public void setQueue(ConcurrentLinkedQueue<ConcurrentItem> contentQueue) {
+
+    }
+
+    private String buildMessage() {
         LocaleMessageService localeMessageService
                 = messagesService.getLocaleMessageService();
 
@@ -53,7 +62,7 @@ public class listHandler implements InputMessageHandler{
         // add empty line after text for better performance
         builder.append('\n');
 
-        for(String roomName : searchingService.getNamesSet()){
+        for (String roomName : searchingService.getNamesSet()) {
             builder.append(roomName)
                     .append('\n');
         }

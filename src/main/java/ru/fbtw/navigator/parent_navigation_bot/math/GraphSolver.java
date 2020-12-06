@@ -1,10 +1,12 @@
 package ru.fbtw.navigator.parent_navigation_bot.math;
 
+import lombok.extern.slf4j.Slf4j;
 import ru.fbtw.navigator.parent_navigation_bot.navigation.Node;
 import ru.fbtw.navigator.parent_navigation_bot.navigation.NodeType;
 
 import java.util.*;
 
+@Slf4j
 public class GraphSolver {
 
 	/**
@@ -32,14 +34,17 @@ public class GraphSolver {
 	 */
 	private HashMap<Node, GraphNode> graphNodeStorage;
 
-	private GraphNodeComparator comarator;
+	private GraphNodeComparator comparator;
 
 
 	public GraphSolver(HashMap<String, Node> nodesStorage) {
 		this.nodesStorage = nodesStorage;
 		uniqueNodes = new HashSet<>();
-		comarator = new GraphNodeComparator();
+		comparator = new GraphNodeComparator();
 		testSecurity();
+		if(!isSecure){
+			log.warn("The node system is not closed. This can lead to errors");
+		}
 		initGraph();
 	}
 
@@ -115,7 +120,7 @@ public class GraphSolver {
 		GraphNode finish = graphNodeStorage.get(target);
 
 		start.setDestination(0);
-		graphNodes.sort(comarator);
+		graphNodes.sort(comparator);
 
 		while (!graphNodes.get(0).isFinal()) {
 			GraphNode selected = graphNodes.get(0);
@@ -131,7 +136,7 @@ public class GraphSolver {
 			}
 			selected.setFinal(true);
 
-			graphNodes.sort(comarator);
+			graphNodes.sort(comparator);
 		}
 
 		LinkedList<GraphNode> path = new LinkedList<>();

@@ -1,11 +1,16 @@
 package ru.fbtw.navigator.parent_navigation_bot.bot_api;
 
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import ru.fbtw.navigator.parent_navigation_bot.bot_api.concurent.AsyncMessageSender;
+import ru.fbtw.navigator.parent_navigation_bot.bot_api.concurent.ConcurrentItem;
 import ru.fbtw.navigator.parent_navigation_bot.cache.UserDataCache;
+
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Component
 @Slf4j
@@ -16,7 +21,8 @@ public class TelegramFacade {
 
     private BotStateContext botStateContext;
     private UserDataCache userDataCache;
-
+    private MapperTelegramBot mapperTelegramBot;
+    private ConcurrentLinkedQueue<ConcurrentItem> queue;
 
 
     public TelegramFacade(
@@ -24,11 +30,12 @@ public class TelegramFacade {
             UserDataCache userDataCache
     ) {
         this.botStateContext = botStateContext;
+        queue = botStateContext.getContentQueue();
         this.userDataCache = userDataCache;
     }
 
-    public SendMessage handleUpdate(Update update) {
-        SendMessage replyMessage = null;
+    public BotApiMethod<?> handleUpdate(Update update) {
+        BotApiMethod<?> replyMessage = null;
 
         Message message = update.getMessage();
         if (message != null && message.hasText()) {
@@ -40,11 +47,11 @@ public class TelegramFacade {
         return replyMessage;
     }
 
-    private SendMessage handleInputMessage(Message message) {
+    private BotApiMethod<?> handleInputMessage(Message message) {
         String inputText = message.getText();
         int userId = message.getFrom().getId();
         BotState botState;
-        SendMessage replyMessage;
+        BotApiMethod<?> replyMessage;
 
         botState = userDataCache.getUserCurrentBotState(userId);
 
@@ -60,7 +67,7 @@ public class TelegramFacade {
                     botState = BotState.LIST;
                     break;
                 default:
-                    botState = BotState.SMART_SEARCH;
+                    botState = BotState.SEARCH;
             }
         }
 
@@ -68,5 +75,12 @@ public class TelegramFacade {
         replyMessage = botStateContext.processInputMessage(botState, message);
 
         return replyMessage;
+    }
+
+    public void setTelegramBot(MapperTelegramBot mapperTelegramBot) {
+        this.mapperTelegramBot = mapperTelegramBot;
+        AsyncMessageSender asyncMessageSender
+                = new AsyncMessageSender(mapperTelegramBot,queue);
+        asyncMessageSender.start();
     }
 }
