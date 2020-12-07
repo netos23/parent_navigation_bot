@@ -1,7 +1,5 @@
 package ru.fbtw.navigator.parent_navigation_bot.search;
 
-import org.checkerframework.checker.units.qual.A;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -13,14 +11,18 @@ import java.util.regex.Pattern;
 public class MessagePredictorService {
     private List<Pattern> fromToPatterns;
     private List<Pattern> toFromPatterns;
+    private List<Pattern> confirmPatterns;
     private Pattern namesPattern;
 
     public MessagePredictorService(
             List<Pattern> fromToPatterns,
             List<Pattern> toFromPatterns,
-            Set<String> nodesNames) {
+            Set<String> nodesNames,
+            List<Pattern> confirmPatterns
+    ) {
         this.fromToPatterns = fromToPatterns;
         this.toFromPatterns = toFromPatterns;
+        this.confirmPatterns = confirmPatterns;
         updatePattern(nodesNames);
 
     }
@@ -70,4 +72,12 @@ public class MessagePredictorService {
         return res;
     }
 
+    public boolean isConfirmMessage(String userResponse) {
+        for(Pattern confPattern : confirmPatterns){
+            if(confPattern.matcher(userResponse).find()){
+                return true;
+            }
+        }
+        return false;
+    }
 }

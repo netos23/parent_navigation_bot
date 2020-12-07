@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class MessagePredictorServiceTest {
     private MessagePredictorService predictorService;
 
@@ -26,8 +24,9 @@ class MessagePredictorServiceTest {
 
         List<Pattern> fromToPatterns = FileUtils.getPatternsFromFile("from_to.patterns");
         List<Pattern> toFromPatterns = FileUtils.getPatternsFromFile("to_from.patterns");
+        List<Pattern> confirmPatterns = FileUtils.getPatternsFromFile("confirm.patterns");
 
-        predictorService = new MessagePredictorService(fromToPatterns,toFromPatterns,fileNames);
+        predictorService = new MessagePredictorService(fromToPatterns,toFromPatterns,fileNames, confirmPatterns);
     }
 
 

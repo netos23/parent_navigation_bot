@@ -10,8 +10,10 @@ public enum BotState {
     SEARCH_GET_FROM,
     SEARCH_GET_TO,
     LIST,
+    CONFIRM_SMART_SEARCH,
     PROCESSING;
 
+    @Deprecated
     public static BotState getOrDefault(int messageType) {
         if (messageType >= 0 && messageType < values().length) {
             return values()[messageType];

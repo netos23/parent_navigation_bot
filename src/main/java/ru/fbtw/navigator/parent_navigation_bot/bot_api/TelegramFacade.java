@@ -1,14 +1,16 @@
 package ru.fbtw.navigator.parent_navigation_bot.bot_api;
 
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.fbtw.navigator.parent_navigation_bot.bot_api.concurent.AsyncMessageSender;
 import ru.fbtw.navigator.parent_navigation_bot.bot_api.concurent.ConcurrentItem;
 import ru.fbtw.navigator.parent_navigation_bot.cache.UserDataCache;
+import ru.fbtw.navigator.parent_navigation_bot.service.LocaleMessageService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,15 +29,18 @@ public class TelegramFacade {
     private UserDataCache userDataCache;
     private MapperTelegramBot mapperTelegramBot;
     private ConcurrentLinkedQueue<ConcurrentItem> queue;
+    private LocaleMessageService localeMessageService;
 
 
     public TelegramFacade(
             BotStateContext botStateContext,
-            UserDataCache userDataCache
+            UserDataCache userDataCache,
+            LocaleMessageService localeMessageService
     ) {
         this.botStateContext = botStateContext;
         queue = botStateContext.getContentQueue();
         this.userDataCache = userDataCache;
+        this.localeMessageService = localeMessageService;
 
         slashCommands = new HashMap<>();
         slashCommands.put(START, BotState.WELCOME);
@@ -47,6 +52,11 @@ public class TelegramFacade {
     public BotApiMethod<?> handleUpdate(Update update) {
         BotApiMethod<?> replyMessage = null;
 
+        if(update.hasCallbackQuery()){
+            BotApiMethod<?> botApiMethod = handleCallbackQuery(update.getCallbackQuery());
+            return botApiMethod;
+        }
+
         Message message = update.getMessage();
         if (message != null && message.hasText()) {
             log.info("New message from User:{}, chatId: {}, text:{}",
@@ -55,6 +65,17 @@ public class TelegramFacade {
             replyMessage = handleInputMessage(message);
         }
         return replyMessage;
+    }
+
+    private BotApiMethod<?> handleCallbackQuery(CallbackQuery query) {
+        int userId = query.getFrom().getId();
+        BotState botState = userDataCache.getUserCurrentBotState(userId);
+        if (botStateContext.acceptsCallbackQueries(botState)) {
+            return botStateContext.processCallbackQuery(botState, query);
+        } else {
+            String messageText = localeMessageService.getMessage("reply.queryError");
+            return sendAnswerCallbackQuery(messageText,false,query);
+        }
     }
 
     private BotApiMethod<?> handleInputMessage(Message message) {
@@ -68,7 +89,7 @@ public class TelegramFacade {
         if (botState == BotState.IDLE) {
             if (!inputText.startsWith("/")
                     || (botState = slashCommands.get(inputText)) == null) {
-                // mast be smart search, but not implemented
+
                 botState = BotState.SMART_SEARCH;
             }
         }
@@ -84,5 +105,13 @@ public class TelegramFacade {
         AsyncMessageSender asyncMessageSender
                 = new AsyncMessageSender(mapperTelegramBot, queue);
         asyncMessageSender.start();
+    }
+
+    private AnswerCallbackQuery sendAnswerCallbackQuery(String text, boolean alert, CallbackQuery callbackquery) {
+        AnswerCallbackQuery answerCallbackQuery = new AnswerCallbackQuery();
+        answerCallbackQuery.setCallbackQueryId(callbackquery.getId());
+        answerCallbackQuery.setShowAlert(alert);
+        answerCallbackQuery.setText(text);
+        return answerCallbackQuery;
     }
 }

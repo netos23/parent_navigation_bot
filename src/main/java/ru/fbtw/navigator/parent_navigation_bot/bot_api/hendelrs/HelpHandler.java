@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.fbtw.navigator.parent_navigation_bot.bot_api.BotState;
 import ru.fbtw.navigator.parent_navigation_bot.bot_api.concurent.ConcurrentItem;
@@ -33,6 +34,16 @@ public class HelpHandler implements InputMessageHandler {
         userDataCache.setUserCurrentBotState(userId, BotState.IDLE);
 
         return replyToUser;
+    }
+
+    @Override
+    public BotApiMethod<?> handle(CallbackQuery callbackQuery) {
+        return null;
+    }
+
+    @Override
+    public boolean acceptsCallbackQueries() {
+        return false;
     }
 
     @Override

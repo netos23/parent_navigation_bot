@@ -2,6 +2,7 @@ package ru.fbtw.navigator.parent_navigation_bot.bot_api;
 
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.fbtw.navigator.parent_navigation_bot.bot_api.concurent.ConcurrentItem;
 import ru.fbtw.navigator.parent_navigation_bot.bot_api.hendelrs.InputMessageHandler;
@@ -36,5 +37,15 @@ public class BotStateContext {
 
     public ConcurrentLinkedQueue<ConcurrentItem> getContentQueue() {
         return contentQueue;
+    }
+
+    public boolean acceptsCallbackQueries(BotState botState) {
+        InputMessageHandler handler = messageHandlers.get(botState);
+        return handler != null && handler.acceptsCallbackQueries();
+    }
+
+    public BotApiMethod<?> processCallbackQuery(BotState botState, CallbackQuery query) {
+        InputMessageHandler currentHandler = messageHandlers.get(botState);
+        return currentHandler.handle(query);
     }
 }

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.fbtw.navigator.parent_navigation_bot.bot_api.BotState;
 import ru.fbtw.navigator.parent_navigation_bot.bot_api.concurent.ConcurrentItem;
@@ -26,20 +27,16 @@ public class SearchHandler implements InputMessageHandler {
     private Map<Integer, SearchItem> searchItemMap;
     private FutureSearchFinder finder;
     private ConcurrentLinkedQueue<ConcurrentItem> contentQueue;
-    //   private MapperTelegramBot mapperTelegramBot;
+
 
     public SearchHandler(
             UserDataCache userDataCache,
             ReplyMessagesService messagesService,
             SearchingService searchingService
-            //   @Lazy MapperTelegramBot mapperTelegramBot
-            // FutureSearchFinder finder,
     ) {
         this.userDataCache = userDataCache;
         this.messagesService = messagesService;
         this.searchingService = searchingService;
-        // this.mapperTelegramBot = mapperTelegramBot;
-
 
         searchItemMap = new HashMap<>();
     }
@@ -47,6 +44,16 @@ public class SearchHandler implements InputMessageHandler {
     @Override
     public BotApiMethod<?> handle(Message message) {
         return processUserInput(message);
+    }
+
+    @Override
+    public BotApiMethod<?> handle(CallbackQuery callbackQuery) {
+        return null;
+    }
+
+    @Override
+    public boolean acceptsCallbackQueries() {
+        return false;
     }
 
     private SendMessage processUserInput(Message message) {
@@ -75,8 +82,6 @@ public class SearchHandler implements InputMessageHandler {
                     try {
                         beginAsyncSearch(userId, chatId);
                         replyToUser = sendStatusUpdate(message, "reply.searchBegin", BotState.PROCESSING);
-                        /*replyToUser = sendStatusUpdate(message, "reply.searchBegin", BotState.PROCESSING);
-                        beginSearch(userId, chatId);*/
                     } catch (Exception ex) {
                         log.error(ex.getMessage());
                         replyToUser = breakSearch(userId, message);
@@ -140,6 +145,7 @@ public class SearchHandler implements InputMessageHandler {
     }
 
     private void beginAsyncSearch(int userId, long chatId) {
+        // todo: проверка инициализации очереди
         this.finder = new FutureSearchFinder(searchingService, userDataCache, contentQueue);
         finder.setParams(userId, chatId, searchItemMap.get(userId));
         Thread thread = new Thread(finder);
@@ -147,6 +153,7 @@ public class SearchHandler implements InputMessageHandler {
     }
 
     private void beginSearch(int userId, long chatId) {
+        // todo: проверка инициализации очереди
         try {
             SearchItem currentSearch = searchItemMap.get(userId);
             SendPhoto[] results = searchingService
@@ -154,6 +161,7 @@ public class SearchHandler implements InputMessageHandler {
             if (results != null) {
                 for (SendPhoto photo : results) {
                     photo.setChatId(chatId).setCaption("");
+                    //todo: отправка в очередь
                 }
             } else {
                 throw new Exception("Error while searching");

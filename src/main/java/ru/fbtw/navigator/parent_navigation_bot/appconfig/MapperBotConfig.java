@@ -23,7 +23,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Scanner;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -85,8 +84,9 @@ public class MapperBotConfig {
 
         List<Pattern> fromToPatterns = FileUtils.getPatternsFromFile("from_to.patterns");
         List<Pattern> toFromPatterns = FileUtils.getPatternsFromFile("to_from.patterns");
+        List<Pattern> confirmPatterns = FileUtils.getPatternsFromFile("confirm.pattern");
 
-        return new MessagePredictorService(fromToPatterns, toFromPatterns, names);
+        return new MessagePredictorService(fromToPatterns, toFromPatterns, names, confirmPatterns);
 
     }
 
