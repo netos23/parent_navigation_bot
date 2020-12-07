@@ -69,7 +69,7 @@ public class TelegramFacade {
             if (!inputText.startsWith("/")
                     || (botState = slashCommands.get(inputText)) == null) {
                 // mast be smart search, but not implemented
-                botState = BotState.PRINT_HELP;
+                botState = BotState.SMART_SEARCH;
             }
         }
 

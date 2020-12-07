@@ -57,10 +57,10 @@ public class SearchHandler implements InputMessageHandler {
         switch (userDataCache.getUserCurrentBotState(userId)) {
             case SEARCH:
                 replyToUser = sendStatusUpdate(message, "reply.fromInvite", BotState.SEARCH_GET_FROM);
-                searchItemMap.put(userId, new SearchItem());
                 break;
 
             case SEARCH_GET_FROM:
+                searchItemMap.put(userId, new SearchItem());
                 if (validateInput(message.getText())
                         && setFrom(userId, message.getText())) {
                     replyToUser = sendStatusUpdate(message, "reply.toInvite", BotState.SEARCH_GET_TO);

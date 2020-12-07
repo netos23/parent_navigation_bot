@@ -12,14 +12,20 @@ import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.meta.ApiContext;
 import ru.fbtw.navigator.parent_navigation_bot.bot_api.MapperTelegramBot;
 import ru.fbtw.navigator.parent_navigation_bot.bot_api.TelegramFacade;
+import ru.fbtw.navigator.parent_navigation_bot.io.FileUtils;
 import ru.fbtw.navigator.parent_navigation_bot.io.GraphJsonParser;
 import ru.fbtw.navigator.parent_navigation_bot.navigation.Node;
+import ru.fbtw.navigator.parent_navigation_bot.search.MessagePredictorService;
 import ru.fbtw.navigator.parent_navigation_bot.search.SearchingService;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Scanner;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 
 @Slf4j
@@ -33,11 +39,11 @@ public class MapperBotConfig {
     private String botToken;
 
     @Bean
-    public MapperTelegramBot mapperTelegramBot(TelegramFacade facade){
+    public MapperTelegramBot mapperTelegramBot(TelegramFacade facade) {
         DefaultBotOptions options = ApiContext
                 .getInstance(DefaultBotOptions.class);
 
-        MapperTelegramBot telegramBot = new MapperTelegramBot(options,facade);
+        MapperTelegramBot telegramBot = new MapperTelegramBot(options, facade);
 
         telegramBot.setWebHookPath(webHookPath);
         telegramBot.setBotUserName(botUserName);
@@ -47,7 +53,7 @@ public class MapperBotConfig {
     }
 
     @Bean
-    public MessageSource messageSource(){
+    public MessageSource messageSource() {
         ReloadableResourceBundleMessageSource messageSource
                 = new ReloadableResourceBundleMessageSource();
 
@@ -57,7 +63,7 @@ public class MapperBotConfig {
     }
 
     @Bean
-    public SearchingService searchingService(){
+    public SearchingService searchingService() {
         HashMap<String, Node> nodesStorage = new HashMap<>();
         try {
             File defaultEnv = new File("default_env.json");
@@ -72,4 +78,17 @@ public class MapperBotConfig {
 
         return new SearchingService(nodesStorage);
     }
+
+    @Bean
+    public MessagePredictorService messagePredictorService(SearchingService service) {
+        Set<String> names = service.getNamesSet();
+
+        List<Pattern> fromToPatterns = FileUtils.getPatternsFromFile("from_to.patterns");
+        List<Pattern> toFromPatterns = FileUtils.getPatternsFromFile("to_from.patterns");
+
+        return new MessagePredictorService(fromToPatterns, toFromPatterns, names);
+
+    }
+
+
 }

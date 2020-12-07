@@ -27,6 +27,8 @@ public class FutureSearchFinder implements Runnable{
     private long chatId;
     private SearchItem currentSearch;
     private ConcurrentLinkedQueue<ConcurrentItem> concurrentItems;
+    private String from;
+    private String to;
 
     public FutureSearchFinder(
            // @Lazy MapperTelegramBot telegramBot,
@@ -40,18 +42,33 @@ public class FutureSearchFinder implements Runnable{
         this.userDataCache = userDataCache;
     }
 
+    public void setParams(
+            int userId,
+            long chatId,
+            String from,
+            String to
+    ){
+        this.userId = userId;
+        this.chatId = chatId;
+        this.from = from;
+        this.to = to;
+    }
+
     public void setParams(int userId, long chatId, SearchItem currentSearch){
         this.userId = userId;
         this.chatId = chatId;
         this.currentSearch = currentSearch;
+        from = currentSearch.getFrom();
+        to = currentSearch.getTo();
     }
 
 
     @Override
     public void run() {
         try {
+
             SendPhoto[] results = searchingService
-                    .getPath(currentSearch.getFrom(), currentSearch.getTo());
+                    .getPath(from, to);
             if(results != null) {
                 for (SendPhoto photo : results) {
                     photo.setChatId(chatId).setCaption("");
