@@ -1,9 +1,6 @@
 package ru.fbtw.navigator.parent_navigation_bot.search;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -39,18 +36,19 @@ public class MessagePredictorService {
 
     public List<String> splitMessage(String text){
         Matcher matcher;
+        String preparedText = text.toLowerCase(Locale.ROOT);
 
         for(Pattern fromToPattern : fromToPatterns){
-            matcher = fromToPattern.matcher(text);
+            matcher = fromToPattern.matcher(preparedText);
             if(matcher.find()){
-                return findNames(text,true);
+                return findNames(preparedText,true);
             }
         }
 
         for(Pattern toFromPattern :toFromPatterns){
-            matcher = toFromPattern.matcher(text);
+            matcher = toFromPattern.matcher(preparedText);
             if(matcher.find()){
-                return findNames(text,false);
+                return findNames(preparedText,false);
             }
         }
 

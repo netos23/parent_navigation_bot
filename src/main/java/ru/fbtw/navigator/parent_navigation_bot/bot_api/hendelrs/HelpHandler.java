@@ -26,7 +26,7 @@ public class HelpHandler implements InputMessageHandler {
     }
 
     @Override
-    public BotApiMethod<?> handle(Message message) {
+    public BotApiMethod<?> handle(Message message,String text) {
         int userId = message.getFrom().getId();
         long chatId = message.getChatId();
 

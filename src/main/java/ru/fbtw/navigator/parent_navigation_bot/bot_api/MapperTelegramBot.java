@@ -3,7 +3,6 @@ package ru.fbtw.navigator.parent_navigation_bot.bot_api;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 public class MapperTelegramBot extends TelegramWebhookBot {

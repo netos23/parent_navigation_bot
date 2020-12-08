@@ -10,8 +10,11 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.fbtw.navigator.parent_navigation_bot.bot_api.concurent.AsyncMessageSender;
 import ru.fbtw.navigator.parent_navigation_bot.bot_api.concurent.ConcurrentItem;
 import ru.fbtw.navigator.parent_navigation_bot.cache.UserDataCache;
+import ru.fbtw.navigator.parent_navigation_bot.io.ResourceDownloader;
+import ru.fbtw.navigator.parent_navigation_bot.search.MessageRecognitionService;
 import ru.fbtw.navigator.parent_navigation_bot.service.LocaleMessageService;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -31,6 +34,8 @@ public class TelegramFacade {
     private ConcurrentLinkedQueue<ConcurrentItem> queue;
     private LocaleMessageService localeMessageService;
 
+    private ResourceDownloader downloader;
+    private MessageRecognitionService recognitionService;
 
     public TelegramFacade(
             BotStateContext botStateContext,
@@ -47,22 +52,39 @@ public class TelegramFacade {
         slashCommands.put(HELP, BotState.PRINT_HELP);
         slashCommands.put(LIST, BotState.LIST);
         slashCommands.put(SEARCH, BotState.SEARCH);
+
+        try {
+            recognitionService = new MessageRecognitionService();
+        } catch (IOException e) {
+            e.printStackTrace();
+            log.error("Unable to execute voice recognition. Function will be disabled");
+        }
     }
 
     public BotApiMethod<?> handleUpdate(Update update) {
         BotApiMethod<?> replyMessage = null;
+        if (downloader == null) {
+            downloader = new ResourceDownloader(mapperTelegramBot.getBotToken());
+        }
 
-        if(update.hasCallbackQuery()){
-            BotApiMethod<?> botApiMethod = handleCallbackQuery(update.getCallbackQuery());
-            return botApiMethod;
+        if (update.hasCallbackQuery()) {
+            return handleCallbackQuery(update.getCallbackQuery());
         }
 
         Message message = update.getMessage();
+
+        if (message != null && message.hasVoice() && recognitionService != null) {
+            String fileId = message.getVoice().getFileId();
+            byte[] voiceBytes = downloader.downloadFileById(fileId);
+            String text = recognitionService.recognize(voiceBytes);
+            replyMessage = handleInputMessage(message, text);
+        }
+
         if (message != null && message.hasText()) {
             log.info("New message from User:{}, chatId: {}, text:{}",
                     message.getFrom().getUserName(), message.getChatId(), message.getText());
 
-            replyMessage = handleInputMessage(message);
+            replyMessage = handleInputMessage(message, message.getText());
         }
         return replyMessage;
     }
@@ -74,12 +96,11 @@ public class TelegramFacade {
             return botStateContext.processCallbackQuery(botState, query);
         } else {
             String messageText = localeMessageService.getMessage("reply.queryError");
-            return sendAnswerCallbackQuery(messageText,false,query);
+            return sendAnswerCallbackQuery(messageText, false, query);
         }
     }
 
-    private BotApiMethod<?> handleInputMessage(Message message) {
-        String inputText = message.getText();
+    private BotApiMethod<?> handleInputMessage(Message message, String text) {
         int userId = message.getFrom().getId();
         BotState botState;
         BotApiMethod<?> replyMessage;
@@ -87,15 +108,15 @@ public class TelegramFacade {
         botState = userDataCache.getUserCurrentBotState(userId);
 
         if (botState == BotState.IDLE) {
-            if (!inputText.startsWith("/")
-                    || (botState = slashCommands.get(inputText)) == null) {
+            if (!text.startsWith("/")
+                    || (botState = slashCommands.get(text)) == null) {
 
                 botState = BotState.SMART_SEARCH;
             }
         }
 
         userDataCache.setUserCurrentBotState(userId, botState);
-        replyMessage = botStateContext.processInputMessage(botState, message);
+        replyMessage = botStateContext.processInputMessage(botState, message, text);
 
         return replyMessage;
     }

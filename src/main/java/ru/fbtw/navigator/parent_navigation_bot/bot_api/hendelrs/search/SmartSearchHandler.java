@@ -57,13 +57,13 @@ public class SmartSearchHandler implements InputMessageHandler {
     }
 
     @Override
-    public BotApiMethod<?> handle(Message message) {
+    public BotApiMethod<?> handle(Message message, String text) {
         int userId = message.getFrom().getId();
         long chatId = message.getChatId();
         SendMessage replyToUser;
         switch (userDataCache.getUserCurrentBotState(userId)) {
             case SMART_SEARCH:
-                List<String> targets = predictorService.splitMessage(message.getText());
+                List<String> targets = predictorService.splitMessage(text);
 
                 if (targets.size() == 2) {
                     SearchItem searchItem = new SearchItem();
@@ -84,8 +84,7 @@ public class SmartSearchHandler implements InputMessageHandler {
                 break;
 
             case CONFIRM_SMART_SEARCH:
-                String userResponse = message.getText();
-                boolean isConfirm = predictorService.isConfirmMessage(userResponse);
+                boolean isConfirm = predictorService.isConfirmMessage(text);
 
                 if (isConfirm) {
                     confirmSearch(userId, chatId);

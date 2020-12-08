@@ -9,7 +9,7 @@ import ru.fbtw.navigator.parent_navigation_bot.bot_api.concurent.ConcurrentItem;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public interface InputMessageHandler {
-    BotApiMethod<?> handle(Message message);
+    BotApiMethod<?> handle(Message message, String text);
     BotApiMethod<?> handle(CallbackQuery callbackQuery);
 
     boolean acceptsCallbackQueries();

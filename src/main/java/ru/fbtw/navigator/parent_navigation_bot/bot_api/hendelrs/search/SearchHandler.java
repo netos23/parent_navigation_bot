@@ -42,8 +42,8 @@ public class SearchHandler implements InputMessageHandler {
     }
 
     @Override
-    public BotApiMethod<?> handle(Message message) {
-        return processUserInput(message);
+    public BotApiMethod<?> handle(Message message,String text) {
+        return processUserInput(message,text);
     }
 
     @Override
@@ -56,7 +56,7 @@ public class SearchHandler implements InputMessageHandler {
         return false;
     }
 
-    private SendMessage processUserInput(Message message) {
+    private SendMessage processUserInput(Message message, String messageText) {
         int userId = message.getFrom().getId();
         long chatId = message.getChatId();
         SendMessage replyToUser;
@@ -68,8 +68,8 @@ public class SearchHandler implements InputMessageHandler {
 
             case SEARCH_GET_FROM:
                 searchItemMap.put(userId, new SearchItem());
-                if (validateInput(message.getText())
-                        && setFrom(userId, message.getText())) {
+                if (validateInput(messageText)
+                        && setFrom(userId, messageText)) {
                     replyToUser = sendStatusUpdate(message, "reply.toInvite", BotState.SEARCH_GET_TO);
                 } else {
                     replyToUser = breakSearch(userId, message);
@@ -77,8 +77,8 @@ public class SearchHandler implements InputMessageHandler {
                 break;
 
             case SEARCH_GET_TO:
-                if (validateInput(message.getText())
-                        && setTo(userId, message.getText())) {
+                if (validateInput(messageText)
+                        && setTo(userId, messageText)) {
                     try {
                         beginAsyncSearch(userId, chatId);
                         replyToUser = sendStatusUpdate(message, "reply.searchBegin", BotState.PROCESSING);

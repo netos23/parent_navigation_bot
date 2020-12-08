@@ -30,9 +30,9 @@ public class BotStateContext {
         messageHandlers.forEach(handler -> handler.setQueue(contentQueue));
     }
 
-    public BotApiMethod<?> processInputMessage(BotState botState, Message message) {
+    public BotApiMethod<?> processInputMessage(BotState botState, Message message, String text) {
         InputMessageHandler currentHandler = messageHandlers.get(botState);
-        return currentHandler.handle(message);
+        return currentHandler.handle(message,text);
     }
 
     public ConcurrentLinkedQueue<ConcurrentItem> getContentQueue() {

@@ -32,7 +32,7 @@ public class WelcomeHandler implements InputMessageHandler {
     }
 
     @Override
-    public BotApiMethod<?> handle(Message message) {
+    public BotApiMethod<?> handle(Message message,String text) {
         return processUserInput(message);
     }
 
