@@ -8,6 +8,7 @@ import ru.fbtw.navigator.parent_navigation_bot.navigation.Node;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 
 class GraphJsonParserTest {
 
@@ -28,7 +29,7 @@ class GraphJsonParserTest {
 	void parseFile0() {
 		try {
 			GraphJsonParser parser = new GraphJsonParser(test0);
-			HashMap<String, Node> res = parser.parse();
+			HashMap<String, Node> res = parser.parse(new HashSet<>());
 			Assertions.assertEquals(3, res.size());
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -41,7 +42,7 @@ class GraphJsonParserTest {
 	void parseFile1() {
 		try {
 			GraphJsonParser parser = new GraphJsonParser(test1);
-			HashMap<String, Node> res = parser.parse();
+			HashMap<String, Node> res = parser.parse(new HashSet<>());
 			Assertions.assertEquals(8, res.size());
 		} catch (IOException e) {
 			e.printStackTrace();

@@ -77,7 +77,9 @@ public class TelegramFacade {
             String fileId = message.getVoice().getFileId();
             byte[] voiceBytes = downloader.downloadFileById(fileId);
             String text = recognitionService.recognize(voiceBytes);
-            replyMessage = handleInputMessage(message, text);
+            if(text != null) {
+                replyMessage = handleInputMessage(message, text);
+            }
         }
 
         if (message != null && message.hasText()) {

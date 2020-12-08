@@ -37,11 +37,11 @@ public class GraphSolver {
 	private GraphNodeComparator comparator;
 
 
-	public GraphSolver(HashMap<String, Node> nodesStorage) {
+	public GraphSolver(HashMap<String, Node> nodesStorage, HashSet<Node> privateNodes) {
 		this.nodesStorage = nodesStorage;
-		uniqueNodes = new HashSet<>();
+		uniqueNodes = privateNodes;
 		comparator = new GraphNodeComparator();
-		testSecurity();
+		//testSecurity();
 		if(!isSecure){
 			log.warn("The node system is not closed. This can lead to errors");
 		}
@@ -53,22 +53,21 @@ public class GraphSolver {
 	}
 
 	public boolean testSecurity() {
-		HashSet<Node> destinations = new HashSet<>(nodesStorage.values());
+		HashSet<Node> destinations = new HashSet<>(uniqueNodes);
 
 		LinkedList<Node> queue = new LinkedList<>();
 		queue.add(getFirstFormSet(destinations));
 
 		while (!queue.isEmpty()) {
 			Node el = queue.pollFirst();
-			uniqueNodes.add(el);
-			if (el != null && (el.getType() == NodeType.TEMP || destinations.remove(el))) {
+			//uniqueNodes.add(el);
+			if (el != null && destinations.remove(el)) {
 				queue.addAll(el.getNeighbours());
 			}
 		}
 
 		return (isSecure = destinations.isEmpty());
 	}
-
 
 	private void initGraph() {
 		// setup nodes

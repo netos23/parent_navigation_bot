@@ -1,6 +1,7 @@
 package ru.fbtw.navigator.parent_navigation_bot.io;
 
 
+import lombok.extern.slf4j.Slf4j;
 import ru.fbtw.navigator.parent_navigation_bot.math.Edge;
 import ru.fbtw.navigator.parent_navigation_bot.math.GraphNode;
 import ru.fbtw.navigator.parent_navigation_bot.navigation.Level;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+@Slf4j
 public class PathDrawer {
 
 	private List<GraphNode> path;
@@ -36,6 +38,10 @@ public class PathDrawer {
 
 	private void buildScenes() throws IOException {
 		editLevel = null;
+		if(path == null){
+			log.info("Nothing is drawn because the path is empty");
+			return;
+		}
 		for (int i = path.size() - 2; i >= 0; i--) {
 			GraphNode prevGraphNode = path.get(i + 1);
 			GraphNode currentGraphNode = path.get(i);

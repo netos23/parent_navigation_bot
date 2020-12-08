@@ -28,7 +28,7 @@ public class MessagePredictorService {
         String format = "(\\b%s\\b)|";
         StringBuilder builder = new StringBuilder();
         for(String name : nodesNames){
-            builder.append(String.format(format,name));
+            builder.append(String.format(format,name.toLowerCase(Locale.ROOT)));
         }
         String pattern = builder.substring(0,builder.length()-1);
         namesPattern = Pattern.compile(pattern);

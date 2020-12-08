@@ -15,6 +15,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,15 +31,17 @@ class PathDrawerTest {
 		String pathname0 = "test_dir/serialize_test2.json";
 		File testFile0 = new File(pathname0);
 		GraphJsonParser parser0 = new GraphJsonParser(testFile0);
-		HashMap<String, Node> testData0 = parser0.parse();
-		GraphSolver solver0 = new GraphSolver(testData0);
+		HashSet<Node> unNodes = new HashSet<>();
+		HashMap<String, Node> testData0 = parser0.parse(unNodes);
+		GraphSolver solver0 = new GraphSolver(testData0,unNodes);
 		test0 = solver0.getPath("Node 0","Node 6");
 
 		String pathname1 = "test_dir/serialize_test1.json";
 		File testFile1 = new File(pathname1);
 		GraphJsonParser parser1 = new GraphJsonParser(testFile1);
-		HashMap<String,Node> testData1 = parser1.parse();
-		GraphSolver solver1 = new GraphSolver(testData1);
+		HashSet<Node> unNodes1 = new HashSet<>();
+		HashMap<String,Node> testData1 = parser1.parse(unNodes1);
+		GraphSolver solver1 = new GraphSolver(testData1,unNodes1);
 		test1 = solver0.getPath("Node 0", "Node 4");
 	}
 

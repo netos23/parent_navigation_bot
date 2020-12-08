@@ -1,26 +1,17 @@
 package ru.fbtw.navigator.parent_navigation_bot.bot_api.hendelrs.search;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.fbtw.navigator.parent_navigation_bot.bot_api.BotState;
-import ru.fbtw.navigator.parent_navigation_bot.bot_api.MapperTelegramBot;
 import ru.fbtw.navigator.parent_navigation_bot.bot_api.concurent.ConcurrentItem;
 import ru.fbtw.navigator.parent_navigation_bot.cache.UserDataCache;
 import ru.fbtw.navigator.parent_navigation_bot.search.SearchingService;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Slf4j
 
-public class FutureSearchFinder implements Runnable{
- //   private MapperTelegramBot telegramBot;
+public class FutureSearchFinder implements Runnable {
     private SearchingService searchingService;
     private UserDataCache userDataCache;
     private int userId;
@@ -31,13 +22,11 @@ public class FutureSearchFinder implements Runnable{
     private String to;
 
     public FutureSearchFinder(
-           // @Lazy MapperTelegramBot telegramBot,
             SearchingService searchingService,
             UserDataCache userDataCache,
-           ConcurrentLinkedQueue<ConcurrentItem> queue
+            ConcurrentLinkedQueue<ConcurrentItem> queue
     ) {
         concurrentItems = queue;
-  //      this.telegramBot = telegramBot;
         this.searchingService = searchingService;
         this.userDataCache = userDataCache;
     }
@@ -47,14 +36,14 @@ public class FutureSearchFinder implements Runnable{
             long chatId,
             String from,
             String to
-    ){
+    ) {
         this.userId = userId;
         this.chatId = chatId;
         this.from = from;
         this.to = to;
     }
 
-    public void setParams(int userId, long chatId, SearchItem currentSearch){
+    public void setParams(int userId, long chatId, SearchItem currentSearch) {
         this.userId = userId;
         this.chatId = chatId;
         this.currentSearch = currentSearch;
@@ -66,17 +55,18 @@ public class FutureSearchFinder implements Runnable{
     @Override
     public void run() {
         try {
-
             SendPhoto[] results = searchingService
                     .getPath(from, to);
-            if(results != null) {
+
+            if (results != null) {
                 for (SendPhoto photo : results) {
                     photo.setChatId(chatId).setCaption("");
                 }
                 concurrentItems.add(new ConcurrentItem(results));
-            }else{
+            } else {
                 throw new Exception("Error while searching");
             }
+
         } catch (Exception e) {
             e.printStackTrace();
             log.error(e.getMessage());

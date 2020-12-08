@@ -11,19 +11,16 @@ import ru.fbtw.navigator.parent_navigation_bot.navigation.Node;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 public class SearchingService {
     private GraphSolver solver;
     private HashMap<String, Node> nodesStorage;
 
-    public SearchingService(HashMap<String, Node> nodesStorage) {
+    public SearchingService(HashMap<String, Node> nodesStorage, HashSet<Node> privateNodes) {
         this.nodesStorage = nodesStorage;
-        solver = new GraphSolver(nodesStorage);
+        solver = new GraphSolver(nodesStorage,privateNodes);
 
     }
 
@@ -31,11 +28,11 @@ public class SearchingService {
         return nodesStorage.keySet();
     }
 
-    public void update(HashMap<String, Node> nodesStorage){
+    public void update(HashMap<String, Node> nodesStorage, HashSet<Node> privateNodes){
         log.info("Updating the node system");
 
         this.nodesStorage = nodesStorage;
-        solver = new GraphSolver(nodesStorage);
+        solver = new GraphSolver(nodesStorage,privateNodes);
     }
 
     public boolean hasName(String text){

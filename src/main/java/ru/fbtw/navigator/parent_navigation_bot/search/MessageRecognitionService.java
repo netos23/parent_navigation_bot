@@ -36,12 +36,16 @@ public class MessageRecognitionService {
     }
 
     private String parseResultList(List<SpeechRecognitionResult> resultsList) {
+        StringBuilder builder = new StringBuilder();
         for (SpeechRecognitionResult result : resultsList) {
+            //builder.append(result.getAlternatives(0).getTranscript());
             result.getAlternativesList().forEach(alternative ->
-                    System.out.printf("Transcription: %s%n", alternative.getTranscript())
+                    builder.append(alternative.getTranscript())
             );
 
         }
-        return null;
+
+        log.info("Text of recognition: {}",builder.toString());
+        return builder.toString();
     }
 }

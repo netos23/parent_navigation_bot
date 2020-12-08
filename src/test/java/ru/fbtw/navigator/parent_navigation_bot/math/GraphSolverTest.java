@@ -9,6 +9,7 @@ import ru.fbtw.navigator.parent_navigation_bot.navigation.Node;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -23,14 +24,16 @@ class GraphSolverTest {
 			String pathname0 = "test_dir/serialize_test.json";
 			File testFile0 = new File(pathname0);
 			GraphJsonParser parser0 = new GraphJsonParser(testFile0);
-			HashMap<String,Node> test0 = parser0.parse();
-			solver0 = new GraphSolver(test0);
+			HashSet<Node> unNodes = new HashSet<>();
+			HashMap<String,Node> test0 = parser0.parse(unNodes);
+			solver0 = new GraphSolver(test0,unNodes);
 
 			String pathname1 = "test_dir/serialize_test1.json";
 			File testFile1 = new File(pathname1);
 			GraphJsonParser parser1 = new GraphJsonParser(testFile1);
-			HashMap<String,Node> test1 = parser1.parse();
-			solver1 = new GraphSolver(test1);
+			HashSet<Node> unNodes1 = new HashSet<>();
+			HashMap<String,Node> test1 = parser1.parse(unNodes1);
+			solver1 = new GraphSolver(test1,unNodes1);
 		} catch (IOException e) {
 			e.printStackTrace();
 			Assertions.fail(e.getMessage());
