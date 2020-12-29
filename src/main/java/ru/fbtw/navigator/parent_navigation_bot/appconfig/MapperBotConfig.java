@@ -64,7 +64,7 @@ public class MapperBotConfig {
         HashMap<String, Node> nodesStorage = new HashMap<>();
         HashSet<Node> privateNodes = new HashSet<>();
         try {
-            File defaultEnv = new File("default_env_1.json");
+            File defaultEnv = new File("default_env.json");
             GraphJsonParser parser = new GraphJsonParser(defaultEnv);
             nodesStorage = parser.parse(privateNodes);
 

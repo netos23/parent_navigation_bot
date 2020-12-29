@@ -25,15 +25,15 @@ class GraphSolverTest {
 			File testFile0 = new File(pathname0);
 			GraphJsonParser parser0 = new GraphJsonParser(testFile0);
 			HashSet<Node> unNodes = new HashSet<>();
-			HashMap<String,Node> test0 = parser0.parse(unNodes);
-			solver0 = new GraphSolver(test0,unNodes);
+			HashMap<String, Node> test0 = parser0.parse(unNodes);
+			solver0 = new GraphSolver(test0, unNodes);
 
 			String pathname1 = "test_dir/serialize_test1.json";
 			File testFile1 = new File(pathname1);
 			GraphJsonParser parser1 = new GraphJsonParser(testFile1);
 			HashSet<Node> unNodes1 = new HashSet<>();
-			HashMap<String,Node> test1 = parser1.parse(unNodes1);
-			solver1 = new GraphSolver(test1,unNodes1);
+			HashMap<String, Node> test1 = parser1.parse(unNodes1);
+			solver1 = new GraphSolver(test1, unNodes1);
 		} catch (IOException e) {
 			e.printStackTrace();
 			Assertions.fail(e.getMessage());
@@ -42,11 +42,11 @@ class GraphSolverTest {
 
 	@Test
 	void getPath0() throws Exception {
-		Assertions.assertEquals(2,solver0.getPath("Node 0","Node 1").size());
+		Assertions.assertEquals(2, solver0.getPath("Node 0", "Node 1").size());
 	}
 
 	@Test
 	void getPath1() throws Exception {
-		Assertions.assertEquals(7,solver1.getPath("Node 11","Node 0").size());
+		Assertions.assertEquals(7, solver1.getPath("Node 11", "Node 0").size());
 	}
 }

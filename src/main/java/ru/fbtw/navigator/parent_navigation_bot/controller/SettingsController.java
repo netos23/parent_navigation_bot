@@ -14,9 +14,9 @@ public class SettingsController {
 
     @RequestMapping(value = "/api/update", method = RequestMethod.POST)
     public String update(
-            @RequestParam String apiKey,
             @RequestBody String updateData
     ) {
+
         return "";
     }
 }
