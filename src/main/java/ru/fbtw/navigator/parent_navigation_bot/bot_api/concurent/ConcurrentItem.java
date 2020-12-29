@@ -17,7 +17,7 @@ import java.util.List;
 public class ConcurrentItem {
     private List<SendPhoto> content;
 
-    public ConcurrentItem(SendPhoto[] content) {
+    public ConcurrentItem(SendPhoto... content) {
         this.content = new ArrayList<>();
         this.content.addAll(Arrays.asList(content));
     }

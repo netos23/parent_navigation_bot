@@ -127,6 +127,7 @@ public class TelegramFacade {
         this.mapperTelegramBot = mapperTelegramBot;
         AsyncMessageSender asyncMessageSender
                 = new AsyncMessageSender(mapperTelegramBot, queue);
+        asyncMessageSender.setDaemon(true);
         asyncMessageSender.start();
     }
 

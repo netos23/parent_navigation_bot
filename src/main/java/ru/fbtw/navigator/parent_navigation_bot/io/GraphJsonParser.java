@@ -53,7 +53,7 @@ public class GraphJsonParser {
                 })
                 .flatMap(node -> node.getPseudoNames()
                         .stream()
-                        .collect(Collectors.toMap(s -> s, s -> node))
+                        .collect(Collectors.toMap(s -> s.toLowerCase(Locale.ROOT), s -> node))
                         .entrySet()
                         .stream())
                 .collect(Collectors

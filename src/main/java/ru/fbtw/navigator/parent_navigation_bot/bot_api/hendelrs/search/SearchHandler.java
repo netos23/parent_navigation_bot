@@ -149,6 +149,7 @@ public class SearchHandler implements InputMessageHandler {
         this.finder = new FutureSearchFinder(searchingService, userDataCache, contentQueue);
         finder.setParams(userId, chatId, searchItemMap.get(userId));
         Thread thread = new Thread(finder);
+        thread.setDaemon(true);
         thread.start();
     }
 
